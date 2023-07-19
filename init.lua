@@ -85,7 +85,7 @@ require('lazy').setup({
 
             -- Useful status updates for LSP
             -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-            { 'j-hui/fidget.nvim', opts = {} },
+            { 'j-hui/fidget.nvim', opts = {}, tag = "legacy", branch = "legacy" },
 
             -- Additional lua configuration, makes nvim stuff amazing!
             'folke/neodev.nvim',
@@ -116,18 +116,14 @@ require('lazy').setup({
             },
         },
     },
-
-    {
-        "rose-pine/neovim",
-        name = "rose-pine"
-    },
+    { 'rose-pine/neovim', name = 'rose-pine' },
     { -- Set lualine as statusline
         'nvim-lualine/lualine.nvim',
         -- See `:help lualine.txt`
         opts = {
             options = {
                 icons_enabled = false,
-                theme = 'rose-pine',
+                theme = 'auto',
                 component_separators = '|',
                 section_separators = '',
             },
@@ -152,7 +148,7 @@ require('lazy').setup({
                         side_by_side = true,
                         layout_strategy = "vertical",
                         layout_config = {
-                            preview_height = 0.8,
+                            preview_height = 0.9,
                         },
                     },
                 },
@@ -187,7 +183,34 @@ require('lazy').setup({
     },
 
     {
-        'andweeb/presence.nvim'
+        'nvim-treesitter/nvim-treesitter-context',
+        config = function()
+            require("treesitter-context").setup {
+                enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
+                multiline_threshold = 20, -- Maximum number of lines to collapse for a single context line
+                trim_scope = 'outer', -- Which context lines to discard if `max_lines` is exceeded. Choices: 'inner', 'outer'
+                mode = 'topline',  -- Line used to calculate context. Choices: 'cursor', 'topline'
+                -- Separator between context and content. Should be a single character string, like '-'.
+                -- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
+                zindex = 20, -- The Z-index of the context window
+            }
+
+            vim.keymap.set("n", "[c", function()
+                require("treesitter-context").go_to_context()
+            end, { silent = true })
+        end,
+    },
+    {
+        'nvim-tree/nvim-web-devicons',
+    },
+    {
+        'stevearc/aerial.nvim',
+        opts = {},
+        -- Optional dependencies
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter",
+            "nvim-tree/nvim-web-devicons"
+        },
     },
     {
         "kylechui/nvim-surround",
@@ -202,7 +225,7 @@ require('lazy').setup({
         config = function()
             require('nvim-ts-autotag').setup()
         end
-    }
+    },
 
     -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
     --       These are some example plugins that I've included in the kickstart repository.
@@ -218,7 +241,13 @@ require('lazy').setup({
     --
     --    An additional note is that if you only copied in the `init.lua`, you can just comment this line
     --    to get rid of the warning telling you that there are not plugins in `lua/custom/plugins/`.
-
+    {
+        'RaafatTurki/hex.nvim',
+        event = "VeryLazy"
+    },
+    {
+        "github/copilot.vim",
+    }
 }, {})
 
 -- [[ Setting options ]]
@@ -231,13 +260,12 @@ vim.o.relativenumber = true
 vim.o.shiftwidth = 4
 vim.o.tabstop = 4
 vim.o.expandtab = true
+vim.o.encoding = "utf-8"
 
+vim.o.mouse=""
 
 -- Make line numbers default
 vim.wo.number = true
-
--- Enable mouse mode
-vim.o.mouse = 'a'
 
 -- Sync clipboard between OS and Neovim.
 --  Remove this option if you want your OS clipboard to remain independent.
@@ -260,7 +288,8 @@ vim.wo.signcolumn = 'yes'
 -- Decrease update time
 vim.o.updatetime = 250
 vim.o.timeout = true
-vim.o.timeoutlen = 300
+vim.o.timeoutlen = 0
+vim.o.ttimeoutlen = 0
 
 -- Set completeopt to have a better completion experience
 vim.o.completeopt = 'menuone,noselect'
@@ -329,6 +358,10 @@ require('telescope').setup {
                 ['<C-d>'] = false,
             },
         },
+        file_ignore_patterns = {
+            "node%_modules/*",
+            "target/*"
+        }
     },
 }
 
@@ -358,26 +391,18 @@ vim.keymap.set('n', '<leader>hn', require("harpoon.ui").nav_next, { desc = "[H]a
 vim.keymap.set('n', '<leader>hp', require("harpoon.ui").nav_prev, { desc = "[H]arpoon [P]revious" })
 vim.keymap.set('n', '<leader>hl', require("harpoon.ui").toggle_quick_menu, { desc = "[H]arpoon [M]enu" })
 
--- presence config
+require("nvim-web-devicons").setup{}
 
--- The setup config table shows all available config options with their default values:
-require("presence").setup({
-    -- General options
-    auto_update         = true,                       -- Update activity based on autocmd events (if `false`, map or manually execute `:lua package.loaded.presence:update()`)
-    neovim_image_text   = "THE ONE PIECE IS REAL",    -- Text displayed when hovered over the Neovim image
-    main_image          = "file",                     -- Main image display (either "neovim" or "file")
-    blacklist           = {},                         -- A list of strings or Lua patterns that disable Rich Presence if the current file name, path, or workspace matches
-    show_time           = true,                       -- Show the timer
-    enable_line_number  = true,
-
-    -- Rich Presence text options
-    editing_text        = "making changes to %s",       -- Format string rendered when an editable file is loaded in the buffer (either string or function(filename: string): string)
-    file_explorer_text  = "looking at %s",              -- Format string rendered when browsing a file explorer (either string or function(file_explorer_name: string): string)
-    git_commit_text     = "committing",                 -- Format string rendered when committing changes in git (either string or function(filename: string): string)
-    plugin_manager_text = "managing plugins",           -- Format string rendered when managing plugins (either string or function(plugin_manager_name: string): string)
-    reading_text        = "reading %s",                 -- Format string rendered when a read-only or unmodifiable file is loaded in the buffer (either string or function(filename: string): string)
-    line_number_text    = "line %s out of %s",          -- Format string rendered when `enable_line_number` is set to true (either string or function(line_number: number, line_count: number): string)
+require('aerial').setup({
+    -- optionally use on_attach to set keymaps when aerial has attached to a buffer
+    on_attach = function(bufnr)
+        -- Jump forwards/backwards with '{' and '}'
+        vim.keymap.set('n', '{', '<cmd>AerialPrev<CR>', {buffer = bufnr})
+        vim.keymap.set('n', '}', '<cmd>AerialNext<CR>', {buffer = bufnr})
+    end
 })
+-- You probably also want to set a keymap to toggle aerial
+vim.keymap.set('n', '<leader>l', '<cmd>AerialToggle!<CR>')
 
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
@@ -398,6 +423,9 @@ require('nvim-treesitter.configs').setup {
             scope_incremental = '<c-s>',
             node_decremental = '<M-space>',
         },
+    },
+    autotag = {
+        enable = true,
     },
     textobjects = {
         select = {
@@ -543,6 +571,8 @@ mason_lspconfig.setup_handlers {
     end,
 }
 
+require 'hex'.setup()
+
 -- nvim-cmp setup
 local cmp = require 'cmp'
 local luasnip = require 'luasnip'
@@ -595,8 +625,8 @@ require('rose-pine').setup({
 	dark_variant = 'main',
 	bold_vert_split = false,
 	dim_nc_background = false,
-	disable_background = true,
-	disable_float_background = true,
+	disable_background = false,
+	disable_float_background = false,
 	disable_italics = true,
 
 	--- @usage string hex value or named color from rosepinetheme.com/palette
@@ -626,8 +656,25 @@ require('rose-pine').setup({
 		-- or set all headings at once
 		-- headings = 'subtle'
 	},
+
+	-- Whether or not highlight_groups optios should change only only update
+	-- the settings they touch or should reset the entire highlight_group.
+	respect_default_highlight_groups = true,
+
+	-- Change specific vim highlight groups
+	-- https://github.com/rose-pine/neovim/wiki/Recipes
+	highlight_groups = {
+		ColorColumn = { bg = 'rose' },
+
+		-- Blend colours against the "base" background
+		CursorLine = { bg = 'foam', blend = 10 },
+		StatusLine = { fg = 'love', bg = 'love', blend = 10 },
+	}
 })
 
+vim.g.copilot_assume_mapped = true
+
+vim.opt.termguicolors = true
 vim.cmd("colorscheme rose-pine")
 
 -- The line beneath this is called `modeline`. See `:help modeline`
