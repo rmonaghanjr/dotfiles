@@ -1,0 +1,4 @@
+#!/bin/zsh
+export PATH=$PATH:$1
+echo $PATH
+

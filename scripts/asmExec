@@ -1,0 +1,89 @@
+#!/bin/zsh
+
+show_help() {
+    echo "Assemble, link, execute, and debug ARM assembly, thanks Jason!"
+    echo
+    echo "Usage: asmExec [-h|-e|-l|-g|-o <file>] -f <targetfile>"
+    echo "e    Execute after linking"
+    echo "l    Link C library when compiling"
+    echo "g    Debug with gdb (You will need to open another terminal to run gdb)"
+    echo "o    Specify output file (default: same as target)"
+    echo "f    Specify target file"
+}
+
+
+# No options
+if [ $# -eq 0 ]
+then 
+    show_help
+    exit
+fi
+
+# Handle options
+gdb=""
+lc=""
+execute=0
+inputfile=""
+targetfile=""
+while getopts ":gleo:f:" option; do
+    case $option in
+        e)
+            execute=1;;
+        l)
+            lc=" -lc";;
+        g)
+            gdb="-g ";;
+        o)
+            targetfile="$OPTARG"
+            if [ -z $targetfile ] || [ "$targetfile" == "-f" ] # If targetfile is empty (check if equal to -f becasue if -f is called after it then we get this)
+            then
+                echo "no output file specified"
+                exit
+            fi;;
+        f)
+            inputfile="$OPTARG";;
+        ?)
+            show_help
+            exit;;
+    esac
+done
+
+if [ -z $inputfile ] # If inputfile is empty
+then
+    echo "no input file specified"
+    exit
+fi
+
+if [ -z $targetfile ]
+then
+    targetfile=${inputfile%.*}
+fi
+echo "compiling $inputfile..."
+aarch64-linux-gnu-as $gdb$inputfile -o $targetfile.o
+aarch64-linux-gnu-ld $targetfile.o -o $targetfile$lc
+echo "done."
+
+if [ $execute -eq 1 ]
+then
+    echo "executing..."
+    if [ -n $lc ]
+        then
+            qemu-aarch64 -L /usr/aarch64-linux-gnu/ $targetfile
+        else
+            qemu-aarch64 $targetfile
+    fi
+    echo "done."
+fi
+
+
+if [ -z $gdb]
+then
+    exit
+fi
+qemu-aarch64 -L /usr/aarch64-linux-gnu/ -g 4321 $targetfile &
+echo "Starting debug on port 4321..." &
+gdb-multiarch --nh -q $targetfile \
+-ex 'set disassemble-next-line on' \
+-ex 'target remote :4321' \
+-ex 'set solib-search-path/usr/aarch64-linux-gnu-lib/' \
+-ex 'layout regs'
