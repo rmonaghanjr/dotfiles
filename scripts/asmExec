@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/bin/zsh
 
 show_help() {
     echo "Assemble, link, execute, and debug ARM assembly, thanks Jason!"
@@ -9,12 +9,13 @@ show_help() {
     echo "g    Debug with gdb (You will need to open another terminal to run gdb)"
     echo "o    Specify output file (default: same as target)"
     echo "f    Specify target file"
+    echo "d    Launch qemu in debug mode"
 }
 
 
 # No options
 if [ $# -eq 0 ]
-then 
+then
     show_help
     exit
 fi
@@ -25,14 +26,18 @@ lc=""
 execute=0
 inputfile=""
 targetfile=""
-while getopts ":gleo:f:" option; do
+while getopts ":gledo:f:" option; do
     case $option in
         e)
             execute=1;;
         l)
-            lc=" -lc";;
+            lc="-lc";;
         g)
-            gdb="-g ";;
+            gdb="-g";;
+        d)
+            gdb="-g"
+            lc="-lc"
+            execute=2;;
         o)
             targetfile="$OPTARG"
             if [ -z $targetfile ] || [ "$targetfile" == "-f" ] # If targetfile is empty (check if equal to -f becasue if -f is called after it then we get this)
@@ -48,6 +53,7 @@ while getopts ":gleo:f:" option; do
     esac
 done
 
+
 if [ -z $inputfile ] # If inputfile is empty
 then
     echo "no input file specified"
@@ -59,8 +65,8 @@ then
     targetfile=${inputfile%.*}
 fi
 echo "compiling $inputfile..."
-aarch64-linux-gnu-as $gdb$inputfile -o $targetfile.o
-aarch64-linux-gnu-ld $targetfile.o -o $targetfile$lc
+aarch64-linux-gnu-as $gdb $inputfile -o $targetfile.o
+aarch64-linux-gnu-ld $targetfile.o -o $targetfile $lc
 echo "done."
 
 if [ $execute -eq 1 ]
@@ -73,17 +79,17 @@ then
             qemu-aarch64 $targetfile
     fi
     echo "done."
-fi
-
-
-if [ -z $gdb]
+elif [ $execute -eq 2 ]
 then
+    echo "executing in debug mode..."
+    qemu-aarch64 -L /usr/aarch64-linux-gnu/ -g 4321 $targetfile &
+    echo "Starting debug on port 4321..." &
+    gdb-multiarch --nh -q $targetfile \
+        -ex 'set disassemble-next-line on' \
+        -ex 'target remote :4321' \
+        -ex 'set solib-search-path/usr/aarch64-linux-gnu-lib/' \
+        -ex 'layout regs'
+    pkill -9 qemu
+    echo "done."
     exit
 fi
-qemu-aarch64 -L /usr/aarch64-linux-gnu/ -g 4321 $targetfile &
-echo "Starting debug on port 4321..." &
-gdb-multiarch --nh -q $targetfile \
--ex 'set disassemble-next-line on' \
--ex 'target remote :4321' \
--ex 'set solib-search-path/usr/aarch64-linux-gnu-lib/' \
--ex 'layout regs'
