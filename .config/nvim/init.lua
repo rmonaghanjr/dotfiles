@@ -66,7 +66,7 @@ require('lazy').setup({
             },
         },
     },
-    {"lunarvim/templeos.nvim"},
+    {"nyoom-engineering/oxocarbon.nvim"},
     { -- Set lualine as statusline
         'nvim-lualine/lualine.nvim',
         -- See `:help lualine.txt`
@@ -559,7 +559,8 @@ cmp.setup {
 vim.g.copilot_assume_mapped = true
 
 vim.opt.termguicolors = true
-vim.cmd("colorscheme templeos")
+vim.opt.background = "dark" -- set this to dark or light
+vim.cmd("colorscheme oxocarbon")
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=4 sts=4 sw=4 et
