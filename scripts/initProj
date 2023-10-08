@@ -1,0 +1,51 @@
+#!/usr/bin/env zsh
+
+usage() {
+    echo "usage: [-c <class name>] <project name>"
+    exit 1
+}
+
+class_name=""
+
+while getopts ":c:" opt; do
+    case $opt in
+        c)
+            class_name=$OPTARG
+            ;;
+        \*)
+            usage
+            ;;
+    esac
+done
+
+if [[ -n $class_name ]]; then
+    project_name=$3
+else
+    project_name=$1
+fi
+
+if [[ -z $project_name ]]; then
+    usage
+fi
+
+if [[ -n $class_name ]]; then
+    echo "init assignment: $project_name in ~/Desktop/$class_name"
+
+    if [[ -d ~/Desktop/$class_name/$project_name ]]; then
+        echo "assignment $project_name already exists"
+        exit 1
+    fi
+
+    mkdir -p ~/Desktop/$class_name/$project_name
+    tmux new -s $project_name -c ~/Desktop/$class_name/$project_name
+else
+    echo "init project: $project_name in ~/Desktop"
+
+    if [[ -d ~/Desktop/$project_name ]]; then
+        echo "project $project_name already exists"
+        exit 1
+    fi
+
+    mkdir -p ~/Desktop/$project_name
+    tmux new -s $project_name -c ~/Desktop/$project_name
+fi
