@@ -3,7 +3,7 @@
 if [[ $# -eq 1 ]]; then
     selected=$1
 else
-    selected=$(find ~/ ~/Desktop ~/Desktop/cs511 -mindepth 1 -maxdepth 1 -type d | fzf)
+    selected=$(find ~/ ~/Desktop ~/Desktop/cs334 ~/Desktop/cs511 ~/Desktop/cs382/grading ~/Desktop/cs382 -mindepth 1 -maxdepth 1 -type d | fzf)
 fi
 
 if [[ -z $selected ]]; then
