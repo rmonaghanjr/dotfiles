@@ -104,3 +104,10 @@ source $ZSH/oh-my-zsh.sh
 # opam configuration
 [[ ! -r /Users/ryanmonaghanjr/.opam/opam-init/init.zsh ]] || source /Users/ryanmonaghanjr/.opam/opam-init/init.zsh  > /dev/null 2> /dev/null
 export PATH="/usr/local/opt/libpq/bin:$PATH"
+
+# bun completions
+[ -s "/Users/ryanmonaghanjr/.bun/_bun" ] && source "/Users/ryanmonaghanjr/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
