@@ -192,10 +192,6 @@ require('lazy').setup({
         'RaafatTurki/hex.nvim',
         event = "VeryLazy"
     },
-    {
-        "github/copilot.vim",
-        event = "VeryLazy"
-    },
 }, {})
 
 -- [[ Setting options ]]
@@ -582,8 +578,6 @@ cmp.setup {
     }
 }
 
-
-vim.g.copilot_assume_mapped = true
 
 vim.opt.termguicolors = true
 vim.opt.background = "dark" -- set this to dark or light
