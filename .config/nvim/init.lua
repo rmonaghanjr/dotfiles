@@ -66,7 +66,9 @@ require('lazy').setup({
             },
         },
     },
-    {"loctvl842/monokai-pro.nvim"},
+    {
+        "rose-pine/neovim", name = "rose-pine"
+    },
     { -- Set lualine as statusline
         'nvim-lualine/lualine.nvim',
         -- See `:help lualine.txt`
@@ -88,8 +90,9 @@ require('lazy').setup({
         --       refer to the README for telescope-fzf-native for more instructions.
         build = 'make',
     },
-
-
+    {
+        "andweeb/presence.nvim"
+    },
     -- Fuzzy Finder (files, lsp, etc)
     {
         'nvim-telescope/telescope.nvim',
@@ -578,59 +581,85 @@ cmp.setup {
     }
 }
 
+require("presence").setup({
+    auto_update         = true,
+    neovim_image_text   = "neovim",
+    main_image          = "neovim",
+    debounce_timeout    = 10,
+    enable_line_number  = true,
+    blacklist           = {},
+    buttons             = true,
+    file_assets         = {},
+    show_time           = true,
+
+    editing_text        = "editing %s",
+    file_explorer_text  = "browsing %s",
+    git_commit_text     = "committing changes",
+    plugin_manager_text = "managing plugins",
+    reading_text        = "reading %s",
+    workspace_text      = "working on %s",
+    line_number_text    = "line %s out of %s",
+})
 
 vim.opt.termguicolors = true
 vim.opt.background = "dark" -- set this to dark or light
 
--- Set colorscheme after options
-require("monokai-pro").setup({
-  transparent_background = false,
-  terminal_colors = true,
-  devicons = true, -- highlight the icons of `nvim-web-devicons`
-  styles = {
-    comment = { italic = false },
-    keyword = { italic = false }, -- any other keyword
-    type = { italic = false }, -- (preferred) int, long, char, etc
-    storageclass = { italic = false }, -- static, register, volatile, etc
-    structure = { italic = false }, -- struct, union, enum, etc
-    parameter = { italic = false }, -- parameter pass in function
-    annotation = { italic = false },
-    tag_attribute = { italic = false }, -- attribute of tag in reactjs
-  },
-  filter = "classic", -- classic | octagon | pro | machine | ristretto | spectrum
-  -- Enable this will disable filter option
-  day_night = {
-    enable = false, -- turn off by default
-    day_filter = "classic", -- classic | octagon | pro | machine | ristretto | spectrum
-    night_filter = "classic", -- classic | octagon | pro | machine | ristretto | spectrum
-  },
-  inc_search = "background", -- underline | background
-  background_clear = {
-    -- "float_win",
-    "toggleterm",
-    "telescope",
-    -- "which-key",
-    "renamer",
-    "notify",
-    -- "nvim-tree",
-    -- "neo-tree",
-    -- "bufferline", -- better used if background of `neo-tree` or `nvim-tree` is cleared
-  },-- "float_win", "toggleterm", "telescope", "which-key", "renamer", "neo-tree", "nvim-tree", "bufferline"
-  plugins = {
-    bufferline = {
-      underline_selected = false,
-      underline_visible = false,
-    },
-    indent_blankline = {
-      context_highlight = "default", -- default | pro
-      context_start_underline = false,
-    },
-  },
-  ---@param c Colorscheme
-  override = function(c) end,
+require('rose-pine').setup({
+	--- @usage 'auto'|'main'|'moon'|'dawn'
+	variant = 'moon',
+	--- @usage 'main'|'moon'|'dawn'
+	dark_variant = 'moon',
+	bold_vert_split = false,
+	dim_nc_background = false,
+	disable_background = true,
+	disable_float_background = false,
+	disable_italics = true,
+
+	--- @usage string hex value or named color from rosepinetheme.com/palette
+	groups = {
+		background = 'base',
+		background_nc = '_experimental_nc',
+		panel = 'surface',
+		panel_nc = 'base',
+		border = 'highlight_med',
+		comment = 'muted',
+		link = 'iris',
+		punctuation = 'subtle',
+
+		error = 'love',
+		hint = 'iris',
+		info = 'foam',
+		warn = 'gold',
+
+		headings = {
+			h1 = 'iris',
+			h2 = 'foam',
+			h3 = 'rose',
+			h4 = 'gold',
+			h5 = 'pine',
+			h6 = 'foam',
+		}
+		-- or set all headings at once
+		-- headings = 'subtle'
+	},
+
+	-- Change specific vim highlight groups
+	-- https://github.com/rose-pine/neovim/wiki/Recipes
+	highlight_groups = {
+		ColorColumn = { bg = 'rose' },
+
+		-- Blend colours against the "base" background
+		CursorLine = { bg = 'foam', blend = 10 },
+		StatusLine = { fg = 'love', bg = 'love', blend = 10 },
+
+		-- By default each group adds to the existing config.
+		-- If you only want to set what is written in this config exactly,
+		-- you can set the inherit option:
+		Search = { bg = 'gold', inherit = false },
+	}
 })
 
--- set colorscheme
-vim.cmd([[colorscheme monokai-pro]])
+-- Set colorscheme after options
+vim.cmd('colorscheme rose-pine')
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=4 sts=4 sw=4 et
