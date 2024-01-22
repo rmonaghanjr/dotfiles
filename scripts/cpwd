@@ -1,7 +1,9 @@
 #!/usr/bin/env zsh
 
-if [[ $# -eq 1 ]]; then
+if  [[ $# -eq 1 ]]; then
     selected=$1
+elif [[ $(uname -a) == *"Linux" ]]; then
+    selected=$(find /Users/ryanmonaghanjr /Users/ryanmonaghanjr/Desktop /Users/ryanmonaghanjr/cs392 -mindepth 1 -maxdepth 1 -type d | fzf)
 else
     selected=$(find ~ ~/Desktop ~/Desktop/cs334 ~/Desktop/cs511 ~/Desktop/cs382/grading ~/Desktop/cs382 -mindepth 1 -maxdepth 1 -type d | fzf)
 fi
