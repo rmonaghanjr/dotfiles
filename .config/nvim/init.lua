@@ -66,7 +66,7 @@ require('lazy').setup({
             },
         },
     },
-    "lunarvim/templeos.nvim",
+    { 'kepano/flexoki-neovim', name = 'flexoki' },
     { -- Set lualine as statusline
         'nvim-lualine/lualine.nvim',
         -- See `:help lualine.txt`
@@ -603,6 +603,6 @@ vim.opt.termguicolors = true
 vim.opt.background = "light" -- set this to dark or light
 
 -- Set colorscheme after options
-vim.cmd('colorscheme templeos')
+vim.cmd('colorscheme flexoki-dark')
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=4 sts=4 sw=4 et
