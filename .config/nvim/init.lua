@@ -66,7 +66,7 @@ require('lazy').setup({
             },
         },
     },
-    { 'kepano/flexoki-neovim', name = 'flexoki' },
+    { "miikanissi/modus-themes.nvim", priority = 1000 },
     { -- Set lualine as statusline
         'nvim-lualine/lualine.nvim',
         -- See `:help lualine.txt`
@@ -193,6 +193,10 @@ require('lazy').setup({
         'RaafatTurki/hex.nvim',
         event = "VeryLazy"
     },
+    {
+        "github/copilot.vim",
+        event = "VeryLazy"
+    }
 }, {})
 
 -- [[ Setting options ]]
@@ -600,9 +604,9 @@ require("presence").setup({
 })
 
 vim.opt.termguicolors = true
-vim.opt.background = "light" -- set this to dark or light
+vim.opt.background = "dark" -- set this to dark or light
 
 -- Set colorscheme after options
-vim.cmd('colorscheme flexoki-dark')
+vim.cmd([[colorscheme modus]]) -- modus_operandi, modus_vivendi
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=4 sts=4 sw=4 et
