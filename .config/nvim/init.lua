@@ -190,6 +190,31 @@ require('lazy').setup({
         },
     },
     {
+        "nvim-tree/nvim-tree.lua",
+        version = "*",
+        lazy = false,
+        dependencies = {
+            "nvim-tree/nvim-web-devicons",
+        },
+        config = function()
+            require("nvim-tree").setup {
+                sort = {
+                    sorter = "case_sensitive",
+                },
+                view = {
+                    width = 30,
+                    side = "right",
+                },
+                renderer = {
+                    group_empty = true,
+                },
+                filters = {
+                    dotfiles = true,
+                },
+            }
+        end,
+    },
+    {
         'RaafatTurki/hex.nvim',
         event = "VeryLazy"
     },
@@ -267,35 +292,6 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     pattern = '*',
 })
 
-vim.api.nvim_create_autocmd('FileType', {
-    callback = function(tbl)
-        local set_offset = require('bufferline.api').set_offset
-
-        local bufwinid
-        local last_width
-        local autocmd = vim.api.nvim_create_autocmd('WinScrolled', {
-            callback = function()
-                bufwinid = bufwinid or vim.fn.bufwinid(tbl.buf)
-
-                local width = vim.api.nvim_win_get_width(bufwinid)
-                if width ~= last_width then
-                    set_offset(width, 'FileTree')
-                    last_width = width
-                end
-            end,
-        })
-
-        vim.api.nvim_create_autocmd('BufWipeout', {
-            buffer = tbl.buf,
-            callback = function()
-                vim.api.nvim_del_autocmd(autocmd)
-                set_offset(0)
-            end,
-            once = true,
-        })
-    end,
-    pattern = 'NvimTree', -- or any other filetree's `ft`
-})
 
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
@@ -332,6 +328,14 @@ require('aerial').setup({
         vim.keymap.set('n', '}', '<cmd>AerialNext<CR>', {buffer = bufnr})
     end
 })
+
+-- disable netrw at the very start of your init.lua
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
+-- optionally enable 24-bit colour
+vim.opt.termguicolors = true
+
 -- You probably also want to set a keymap to toggle aerial
 vim.keymap.set('n', '<leader>l', '<cmd>AerialToggle!<CR>')
 
@@ -474,7 +478,7 @@ vim.api.nvim_create_autocmd("FileType", {
         local root_dir = vim.fs.dirname(vim.fs.find({
             "Package.swift",
             ".git",
-            }, { upward = true })[1])
+        }, { upward = true })[1])
         local client = vim.lsp.start({
             name = "sourcekit-lsp",
             cmd = { "sourcekit-lsp" },
