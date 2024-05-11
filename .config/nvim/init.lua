@@ -41,7 +41,21 @@ require('lazy').setup({
             'folke/neodev.nvim',
         },
     },
-
+    {
+        "scottmckendry/cyberdream.nvim",
+        lazy = false,
+        priority = 1000,
+    },
+    {'romgrk/barbar.nvim',
+        dependencies = {
+            'lewis6991/gitsigns.nvim', -- OPTIONAL: for git status
+            'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
+        },
+        init = function() vim.g.barbar_auto_setup = false end,
+        opts = {
+        },
+        version = '^1.0.0', -- optional: only update when a new 1.x version is released
+    },
     { -- Autocompletion
         'hrsh7th/nvim-cmp',
         dependencies = { 'hrsh7th/cmp-nvim-lsp', 'L3MON4D3/LuaSnip', 'saadparwaiz1/cmp_luasnip' },
@@ -66,7 +80,6 @@ require('lazy').setup({
             },
         },
     },
-    { "EdenEast/nightfox.nvim" },
     { -- Set lualine as statusline
         'nvim-lualine/lualine.nvim',
         -- See `:help lualine.txt`
@@ -209,7 +222,11 @@ require('lazy').setup({
                     group_empty = true,
                 },
                 filters = {
-                    dotfiles = true,
+                    dotfiles = false,
+                },
+                git = {
+                    ignore = false,
+                    enable = true,
                 },
             }
         end,
@@ -608,19 +625,35 @@ require("presence").setup({
 })
 
 vim.opt.termguicolors = true
-vim.opt.background = "dark" -- set this to dark or light
+vim.opt.background = "light" -- set this to dark or light
 
-require('nightfox').setup({
-  options = {
-    styles = {
-      comments = "NONE",
-      keywords = "NONE",
-      types = "NONE",
-    }
-  }
+require("barbar").setup({
+    sidebar_filetypes = {
+        NvimTree = true,
+    },
 })
+vim.cmd("hi BufferTabpageFill guibg=#ffffff")
+vim.cmd("hi BufferCurrent guibg=#ffffff")
+vim.cmd("hi BufferCurrentMod guibg=#ffffff")
+vim.cmd("hi BufferInactive guibg=#efefef")
 
-vim.cmd("colorscheme terafox")
+require("cyberdream").setup({
+    -- Recommended - see "Configuring" below for more config options
+    transparent = true,
+    italic_comments = false,
+    hide_fillchars = true,
+    borderless_telescope = true,
+    theme = {
+        variant = "light",
+        highlights = {
+        },
+        colors = {
+        },
+    },
+})
+vim.cmd("colorscheme cyberdream") -- set the colorscheme
+
+
 -- Set colorscheme after options
 -- vim.cmd("colorscheme rose-pine")
 -- The line beneath this is called `modeline`. See `:help modeline`
